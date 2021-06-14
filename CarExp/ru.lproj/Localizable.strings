@@ -1,0 +1,73 @@
+/* 
+  Localizable.strings
+  CarExp
+
+  Created by Денис Колеснёв on 24.10.2020.
+  
+*/
+
+"Expenses" = "Затраты";
+"Reminders" = "Напоминания";
+"Statistic" = "Статистика";
+"Settings" = "Настройки";
+
+"Fuel" = "Топливо";
+"Service" = "Обслуживание";
+"Other" = "Прочее";
+
+"Save" = "Сохранить";
+"Add" = "Добавить";
+"New Expense" = "Новая запись";
+"New Reminder" = "Новое напоминание";
+"Change Expense" = "Изменить запись";
+"Change Reminder" = "Изменить напоминание";
+
+
+"Date:" = "Дата:";
+"Distance:" = "Пробег:";
+"Fuel Type:" = "Тип топлива:";
+"Liters:" = "Объем:";
+"Price:" = "Стоимость:";
+"Info:" = "Примечание:";
+"Caption:" = "Описание:";
+
+"Petrol" = "Бензин";
+"Diesel" = "Дизель";
+"Gas" = "Газ";
+
+"AI-80" = "АИ-80";
+"AI-92" = "АИ-92";
+"AI-95" = "АИ-95";
+"AI-98" = "АИ-98";
+
+"km" = "км";
+"liters" = "литров";
+
+"Reminder" = "Hапоминание";
+
+"Fields are not filled" = "Заполнены не все поля";
+"Field \"Litres\" are not filled" = "Поле \"Литров\" не заполнено";
+"Field \"Distance\" are not filled" = "Поле \"Пробег\" не заполнено";
+"Field \"Caption\" are not filled" = "Поле \"Описание\" не заполнено";
+
+"By Distance" = "По пробегу";
+"By Date" = "По дате";
+"By Period" = "По периоду";
+
+"Every" = "Каждые";
+"Remind" = "Напомнить";
+"days" = "дней";
+
+"Cancel" = "Отмена";
+
+"Full Tank" = "Полный бак";
+
+"After" = "Через";
+"Missed" = "Пропущено";
+"Now" = "Сейчас";
+"Today" = "Сегодня";
+"day" = "день";
+"days" = "дня";
+"Today" = "Сегодня";
+
+"Add Expense" = "Добавить расход";
