@@ -60,16 +60,7 @@ struct ExpensesView: View {
                                 if self.isFuelExpanded {
                                     ForEach(self.fuelExpenses, id: \.self.id) { expense in
                                         HStack{
-                                            VStack(alignment: .leading) {
-                                                HStack{
-                                                    Image(systemName: "calendar")
-                                                    Text(expense.date.toString).bold()
-                                                }
-                                                HStack{
-                                                    Image(systemName: "speedometer")
-                                                    Text("\(expense.distance)")
-                                                }
-                                            }.padding(.trailing, 4)
+                                            DateAndDistancePart(expense: expense, inSelf: self)
                                             Divider()
                                             VStack(alignment: .leading) {
                                                 HStack(spacing: 4) {
@@ -82,11 +73,7 @@ struct ExpensesView: View {
                                             }.padding(.horizontal, 4)
                                             Spacer()
                                             Divider()
-                                            HStack{
-                                                Image(systemName: "sum")
-                                                Text(expense.price.toRoundedStr(2)).bold()
-                                            }
-                                        }.onTapGesture{
+                                            SummPart(expense: expense)                                        }.onTapGesture{
                                             tappedExp = expense
                                             reminder = getReminder(expId: expense.id!, self.context)
                                             self.showingDetail = true
@@ -117,24 +104,12 @@ struct ExpensesView: View {
                                 if self.isServiceExpanded {
                                     ForEach(self.serviceExpenses, id: \.self.id) { expense in
                                         HStack{
-                                            VStack(alignment: .leading) {
-                                                HStack{
-                                                    Image(systemName: "calendar")
-                                                    Text(expense.date.toString).bold()
-                                                }
-                                                HStack{
-                                                    Image(systemName: "speedometer")
-                                                    Text("\(expense.distance)")
-                                                }
-                                            }.padding(.trailing, 4)
+                                            DateAndDistancePart(expense: expense, inSelf: self)
                                             Divider()
                                             Text(expense.caption ?? "").padding(.horizontal, 4)
                                             Spacer()
                                             Divider()
-                                            HStack{
-                                                Image(systemName: "sum")
-                                                Text(expense.price.toRoundedStr(2)).bold()
-                                            }
+                                            SummPart(expense: expense)
                                         }
                                         .onTapGesture {
                                             tappedExp = expense
@@ -167,16 +142,7 @@ struct ExpensesView: View {
                                 if self.isOtherExpanded {
                                     ForEach(self.otherExpenses, id: \.self.id) { expense in
                                         HStack{
-                                            VStack(alignment: .leading) {
-                                                HStack{
-                                                    Image(systemName: "calendar")
-                                                    Text(expense.date.toString).bold()
-                                                }
-                                                HStack{
-                                                    Image(systemName: "speedometer")
-                                                    Text("\(expense.distance)")
-                                                }
-                                            }.padding(.trailing, 4)
+                                            DateAndDistancePart(expense: expense, inSelf: self)
                                             Divider()
                                             VStack(alignment: .leading) {
                                                 Text(expense.caption ?? "")
@@ -186,10 +152,7 @@ struct ExpensesView: View {
                                             }.padding(.horizontal, 4)
                                             Spacer()
                                             Divider()
-                                            HStack{
-                                                Image(systemName: "sum")
-                                                Text(expense.price.toRoundedStr(2)).bold()
-                                            }
+                                            SummPart(expense: expense)
                                         }
                                         .onTapGesture {
                                             tappedExp = expense
@@ -226,7 +189,36 @@ struct ExpensesView: View {
         }
     }
     
+    
+    struct DateAndDistancePart: View {
+        var expense: Expenses
+        var inSelf: ExpensesView
+        var body: some View{
+            VStack(alignment: .leading) {
+                HStack{
+                    Image(systemName: "calendar")
+                    Text(self.expense.date.toString).bold()
+                }
+                HStack{
+                    Image(systemName: "speedometer")
+                    Text("\(self.expense.distance)")
+                }
+            }.padding(.trailing, 4)
+        }
+    }
+    
+    
+    struct SummPart: View {
+        var expense: Expenses
+        var body: some View{
+            HStack{
+                Image(systemName: "sum")
+                Text(self.expense.price.toRoundedStr(2)).bold()
+            }
+        }
+    }
 
+    
     struct AddExpenseButton: View {
         @State private var showSearchView = false
         @State var tag: String?
