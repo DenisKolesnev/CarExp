@@ -48,7 +48,7 @@ struct AddExpenseView: View {
         guard exp != nil else { return }
         self.expense = exp
         self._date = State(initialValue: exp!.date ?? Date())
-        self._litersStr = State(initialValue: exp!.litres.toRoundedStr(1))
+        self._litersStr = State(initialValue: exp!.liters.toRoundedStr(1))
         self._caption = State(initialValue: exp!.caption ?? "")
         self._info = State(initialValue: exp!.info ?? "")
         self._distanceStr = State(initialValue: String(exp!.distance))
@@ -79,13 +79,13 @@ struct AddExpenseView: View {
             
             VStack {
                 HStack {
-                    Text("Date:").frame(width: 120, height: 40, alignment: .leading)
+                    Text("Date".localize+":").frame(width: 120, height: 40, alignment: .leading)
                     DatePicker("", selection: self.$date, in: ...Date(), displayedComponents: .date).labelsHidden()
                     Spacer()
                 }
                 
                 HStack {
-                    Text("Distance:").frame(width: 120, height: 40, alignment: .leading)
+                    Text("Distance".localize+":").frame(width: 120, height: 40, alignment: .leading)
                     TextField("Distance", text: self.$distanceStr)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.numberPad)
@@ -113,8 +113,8 @@ struct AddExpenseView: View {
                     }
                     
                     HStack {
-                        Text("Liters:").frame(width: 120, height: 40, alignment: .leading)
-                        TextField("Liters", text: self.$litersStr)
+                        Text("Amount".localize+":").frame(width: 120, height: 40, alignment: .leading)
+                        TextField("Amount", text: self.$litersStr)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .keyboardType(.decimalPad)
                             .onReceive(Just(self.litersStr)) { _ in
@@ -130,35 +130,32 @@ struct AddExpenseView: View {
                             }
                         Text("liters")
                     }
-                    Toggle("Full Tank", isOn: $fullTank)
+                    Toggle("Full Tank".localize+":", isOn: $fullTank).toggleStyle(CheckboxStyle())
                 } else {
                     HStack {
-                        Text("Caption:").frame(width: 100, height: 40, alignment: .leading)
+                        Text("Caption".localize+":").frame(width: 100, height: 40, alignment: .leading)
                         TextField("Caption", text: self.$caption).textFieldStyle(RoundedBorderTextFieldStyle())
                     }
                 }
                 
                 HStack {
-                    Text("Price:").frame(width: 120, height: 40, alignment: .leading)
-                    TextField("Write Price", text: self.$priceStr)
+                    Text("Price".localize+":").frame(width: 120, height: 40, alignment: .leading)
+                    TextField("Price", text: self.$priceStr)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.decimalPad)
-                        .onTapGesture{
-                            if self.priceStr == "0.00" {
-                                self.priceStr = ""
-                            }
-                        }
+                        .onTapGesture{ if self.priceStr == "0.00" { self.priceStr = "" } }
+                    Text(UserDef().getCurrencySumbol())
                 }
                 
-                HStack {
-                    Text("Info:").frame(width: 120, height: 40, alignment: .leading)
-                    TextField("Write Information", text: self.$info).textFieldStyle(RoundedBorderTextFieldStyle())
-                }
+//                HStack {
+//                    Text("Info".localize+":").frame(width: 120, height: 40, alignment: .leading)
+                    TextField("Info", text: self.$info).textFieldStyle(RoundedBorderTextFieldStyle())
+//                }
             }
             if self.selectedExpenseType != .fuel {
                 NavigationLink(destination: AddReminderView()) {
                     VStack(alignment: .leading) {
-                        Text("Reminder")
+                        Text("Reminder".localize+":")
                         
                         if reminder != nil {
                             let reminderText = getReminderText()
@@ -177,6 +174,19 @@ struct AddExpenseView: View {
                 Alert(title: Text(LocalizedStringKey("Fields are not filled")),
                       message: Text(self.alertMessage),
                       dismissButton: .none)})
+    }
+    
+    struct CheckboxStyle: ToggleStyle {
+        func makeBody(configuration: Self.Configuration) -> some View {
+            return HStack {
+                configuration.label.frame(width: 120, alignment: .leading)
+                Image(systemName: configuration.isOn ? "checkmark.circle.fill" : "circle")
+                    .resizable().frame(width: 24, height: 24)
+                    .foregroundColor(configuration.isOn ? Color(.systemBlue) : Color(.systemGray))
+                    .onTapGesture { configuration.isOn.toggle() }
+                Spacer()
+            }
+        }
     }
     
     
@@ -210,25 +220,25 @@ struct AddExpenseView: View {
                 
                 if !inSelf.showAlert {
                     exp.id = expId
-                    exp.caption = inSelf.caption
-                    exp.date = inSelf.date
+                    exp.caption = (inSelf.caption == "" ? nil : inSelf.caption)
+                    exp.date = inSelf.date.startOfDay
                     exp.distance = distance
                     exp.price = inSelf.priceStr.doubleValue
                     exp.type = "\(inSelf.selectedExpenseType)"
-                    exp.info = inSelf.info
+                    exp.info = (inSelf.info == "" ? nil : inSelf.info)
                     exp.fullTank = inSelf.fullTank
                     
                     if inSelf.selectedExpenseType == .fuel {
-                        exp.litres = litres
+                        exp.liters = litres
                         exp.fuelType = "\(inSelf.fuelType)"
                     } else {
-                        exp.litres = 0
+                        exp.liters = 0
                         exp.fuelType = nil
                     }
                     
                     // ------------------------- Save Reminder ------------------------- \\
                     if reminder != nil {
-                        let reminders = getReminders(expId: expId, inSelf.context) ?? Reminders(context: inSelf.context)
+                        let reminders = UserData(inSelf.context).getReminders(expId: expId) ?? Reminders(context: inSelf.context)
                         reminders.id = UUID()
                         reminders.expId = expId
                         reminders.type = reminder!.type.rawValue
@@ -239,14 +249,14 @@ struct AddExpenseView: View {
                         
                         switch reminder!.type {
                         case .byDate:
-                            reminders.date = reminder!.date
+                            reminders.date = reminder!.date.startOfDay
                         case .byDistance:
                             reminders.distance = reminder!.distance!
                         }
                     }
                     // ----------------------------------------------------------------- \\
                     
-                    saveContext(inSelf.context)
+                    UserData(inSelf.context).saveContext()
                     inSelf.presentationMode.wrappedValue.dismiss()
                     inSelf.reminderView?.presentationMode.wrappedValue.dismiss()
                 }

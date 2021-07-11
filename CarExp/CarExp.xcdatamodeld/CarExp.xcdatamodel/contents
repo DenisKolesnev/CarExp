@@ -9,7 +9,7 @@
         <relationship name="expenses" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Expenses" inverseName="cars" inverseEntity="Expenses"/>
     </entity>
     <entity name="Expenses" representedClassName="Expenses" syncable="YES" codeGenerationType="class">
-        <attribute name="caption" attributeType="String"/>
+        <attribute name="caption" optional="YES" attributeType="String"/>
         <attribute name="carId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="distance" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
@@ -17,7 +17,7 @@
         <attribute name="fullTank" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="info" optional="YES" attributeType="String"/>
-        <attribute name="litres" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="liters" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="price" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="type" attributeType="String"/>
         <relationship name="cars" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Cars" inverseName="expenses" inverseEntity="Cars"/>

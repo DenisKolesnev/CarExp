@@ -20,7 +20,7 @@ struct RemindersView: View {
     
     private func getExpCaption(expId: UUID?) -> String {
         if expId == nil { return "" }
-        guard let exp = getExpenses(expId!, self.context) else { return "" }
+        guard let exp = UserData(self.context).getExpenses(expId!) else { return "" }
         guard let caption = exp.caption else { return "" }
         return caption
     }
@@ -52,17 +52,15 @@ struct RemindersView: View {
                                 }
                                 HStack(spacing: 0) {
                                     Text("(")
-                                    ReminderDateText(inSelf: getReminders(id: reminder.id!, self.context)!)
+                                    ReminderDateText(inSelf: UserData(self.context).getReminders(id: reminder.id!)!)
                                     Text(")")
                                     Spacer()
                                 }.foregroundColor(Color(.secondaryLabel))
                             }
                         }.padding(8)
                     }
-                    .overlay(RoundedRectangle(cornerRadius: 8)
-                                .stroke(lineWidth: 1)
-                                .foregroundColor(reminderColor)
-                    ).onTapGesture{
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(lineWidth: 2).foregroundColor(reminderColor))
+                    .onTapGesture{
                         tapReminder = reminder
                         self.showingDetail = true
                     }
@@ -71,7 +69,7 @@ struct RemindersView: View {
                         for index in indexSet {
                             let reminder = reminders[index]
                             context.delete(reminder)
-                            saveContext(self.context)
+                            UserData(self.context).saveContext()
                         }
                     })
                 }

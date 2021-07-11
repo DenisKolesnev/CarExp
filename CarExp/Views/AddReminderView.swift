@@ -76,14 +76,17 @@ struct AddReminderView: View {
             }
             
             if self.reminders != nil {
-                HStack {
-                    Spacer()
-                    Button("Add Expense") {
+                    Button(action: {
                         setReminder()
                         self.showAddExpenseView.toggle()
+                    }) {
+                        HStack {
+                            Spacer()
+                            Image(systemName: "plus")
+                            Text("Add Expense")
+                            Spacer()
+                        }.padding(10.0).overlay(RoundedRectangle(cornerRadius: 10.0).stroke(lineWidth: 2.0))
                     }
-                    Spacer()
-                }
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -112,7 +115,7 @@ struct AddReminderView: View {
             if self.distanceText == "0" { self.distanceText = "" }
         })
         .sheet(isPresented: self.$showAddExpenseView) {
-            let newExp = (self.reminders!.expId == nil ? nil : getExpenses(self.reminders!.expId!, self.context))
+            let newExp = (self.reminders!.expId == nil ? nil : UserData(self.context).getExpenses(self.reminders!.expId!))
             NavigationView { AddExpenseView(newExp: newExp, self).environment(\.managedObjectContext, self.context) }
         }
     }

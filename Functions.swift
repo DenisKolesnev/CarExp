@@ -21,75 +21,9 @@ func loadReminderType(_ value: String?) -> ReminderType? {
 }
 
 
-func getReminders(expId: UUID, _ context: NSManagedObjectContext) -> Reminders? {
-    do {
-        let fetchRequest: NSFetchRequest<Reminders> = Reminders.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "expId = %@", "\(expId)")
-        let fetchedResults = try context.fetch(fetchRequest)
-        guard let rem = fetchedResults.first else { return nil }
-        return rem
-    } catch { return nil }
-}
-
-
-func getReminder(expId: UUID, _ context: NSManagedObjectContext) -> Reminder? {
-    guard let rem = getReminders(expId: expId, context) else { return nil }
-    guard let reminderType: ReminderType = loadReminderType(rem.type) else { return nil }
-    return Reminder(id: rem.id, type: reminderType, distance: rem.distance, date: rem.date)
-}
-
-
-func getReminders(id: UUID, _ context: NSManagedObjectContext) -> Reminders? {
-    do {
-        let fetchRequest: NSFetchRequest<Reminders> = Reminders.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id = %@", "\(id)")
-        let fetchedResults = try context.fetch(fetchRequest)
-        return fetchedResults.first
-    } catch { return nil }
-}
-
-
-
-func getExpenses(_ expId: UUID, _ context: NSManagedObjectContext) -> Expenses? {
-    do {
-        let fetchRequest: NSFetchRequest<Expenses> = Expenses.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id = %@", "\(expId)")
-        let fetchedResults = try context.fetch(fetchRequest)
-        guard let exp = fetchedResults.first else { return nil }
-        return exp
-    } catch { return nil }
-}
-
-
-func saveContext(_ context: NSManagedObjectContext) {
-    do {
-        try context.save()
-    } catch {
-        let nserror = error as NSError
-        fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-    }
-    
-    setActualDistance(context)
-}
-
-
-func setActualDistance(_ context: NSManagedObjectContext) {
-    do {
-        let fetchRequest: NSFetchRequest<Expenses> = Expenses.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "distance == max(distance)")
-        let fetchedResults = try context.fetch(fetchRequest)
-
-        let actualDistance = (fetchedResults.isEmpty ? 0 : fetchedResults[0].distance)
-        UserDef().setActualDistance(actualDistance)
-    } catch {
-        let nserror = error as NSError
-        fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-    }
-}
-
-
 func getReminderDistance(_ reminder: Reminders, _ context: NSManagedObjectContext) -> Int32 {
-    let exp = getExpenses(reminder.expId!, context)!
+    guard let expId = reminder.expId else { return 0 }
+    guard let exp = UserData(context).getExpenses(expId) else { return 0 }
     return exp.distance + reminder.distance - UserDef().getActualDistance()
 }
 
@@ -106,18 +40,3 @@ func reminderIsMiss(_ reminder: Reminders, _ context: NSManagedObjectContext) ->
     }
 }
 
-
-func getMissedReminders(_ context: NSManagedObjectContext) -> [Reminders] {
-    do {
-        let fetchRequest: NSFetchRequest<Reminders> = Reminders.fetchRequest()
-        let fetchedResults = try context.fetch(fetchRequest)
-
-        var result = [Reminders]()
-        for reminder in fetchedResults {
-            if reminderIsMiss(reminder, context) {
-                result.append(reminder)
-            }
-        }
-        return result
-    } catch { return [] }
-}

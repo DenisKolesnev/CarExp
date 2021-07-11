@@ -31,7 +31,7 @@ struct ContentView: View {
                             Image(systemName: "bell")
                         }
                     
-                    StatisticsView()
+                    StatisticView(viewName: "Statistic")
                         .tabItem {
                             Text("Statistic")
                             Image(systemName: "chart.bar.xaxis")
@@ -53,7 +53,7 @@ struct ContentView: View {
                 .frame(width: 20, height: 20)
                 .offset(x: ((2 * self.badgePos) - 1) * (geometry.size.width / (2 * self.tabsCount)), y: -30)
                 .opacity(self.badgeNumber == 0 ? 0 : 1)
-                .onAppear(perform: { self.badgeNumber = getMissedReminders(self.context).count })
+                .onAppear(perform: { self.badgeNumber = UserData(self.context).getMissedReminders().count })
             }.ignoresSafeArea(/*@START_MENU_TOKEN@*/.keyboard/*@END_MENU_TOKEN@*/)
         }
     }
