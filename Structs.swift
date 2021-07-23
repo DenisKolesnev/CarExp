@@ -169,7 +169,73 @@ struct UserData {
         return summLiters / (Double(maxDistance) - Double(minDistance)) * 100
     }
     // ------------------------------------------------------------------------------------------------ \\
-    func getConsumption(_ year: Int?) -> Double { // Расход топлива
+    func getConsumption(_ year: Int) -> PointData { // Расход топлива
+        func subExp(_ exp: [Expenses], from: Expenses, to: Expenses) -> [Expenses] {
+            guard let indexFrom = exp.firstIndex(of: from) else { return [Expenses]() }
+            guard let indexTo = exp.lastIndex(of: to) else { return [Expenses]() }
+            var result = [Expenses]()
+            result.append(contentsOf: exp.dropFirst(indexFrom).dropLast(indexTo))
+            return result
+        }
+        
+        do {
+            var result = PointData()
+            let calendar = Calendar.current
+//            calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+            let distance = getDistance(year)
+            
+            for month in (1...12) {
+                let monthName = calendar.standaloneMonthSymbols[month-1]
+                let dateComp = DateComponents(year: year, month: month, day: 1)
+                guard let startOfMonth = calendar.date(from: dateComp) else { return PointData() }
+                guard let endOfMonth = startOfMonth.endOfMonth else { return PointData() }
+                guard let distDiff = distance[monthName] else { return PointData() }
+                
+                expensesRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Expenses.date, ascending: true)]
+                
+                expensesRequest.predicate = NSPredicate(format: "date BETWEEN { %@ , %@ }",
+                                                        startOfMonth as NSDate, endOfMonth as NSDate)
+                let exp = try self.context.fetch(expensesRequest)
+                let expFullTank = exp.filter({ $0.fullTank })
+                
+                // Если есть заправки полного бака за месяц
+                if expFullTank.count != 0 {
+                    if expFullTank.count == 1 { // Если одна заправка полного бака за месяц
+                        expensesRequest.predicate = NSPredicate(format: "date < %@", endOfMonth as NSDate)
+                        let expOfPrevPeriod = try self.context.fetch(expensesRequest)
+                        let expOfPrevPeriodFullTank = expOfPrevPeriod.filter({ $0.fullTank })
+                        
+                        // Если есть заправки полного бака за предыдущий период
+                        if expOfPrevPeriodFullTank.count != 0 {
+                            let expIndex = exp.firstIndex(of: expFullTank.first!)!
+                            let litersCurrMonth = exp.dropLast(expIndex).reduce(0, { $0 + $1.liters })
+                            
+                            let expPrevIndex = expOfPrevPeriod.lastIndex(of: expOfPrevPeriodFullTank.last!)!
+                            let litersPrevMonth = expOfPrevPeriod.dropFirst(expPrevIndex).reduce(0, { $0 + $1.liters }) - expOfPrevPeriodFullTank.last!.liters
+                            
+                            result[monthName] = (litersCurrMonth + litersPrevMonth) / distDiff * 100
+                            continue
+                        }
+                    } else { // Если запровок полного бака за месяц более одной
+                        let firstExp = expFullTank.first!
+                        let lastExp = expFullTank.last!
+                        
+                        let distDiff = lastExp.distance - firstExp.distance
+                        let subExp = subExp(exp, from: firstExp, to: lastExp)
+                        let litDiff = subExp.reduce(0, { $0 + $1.liters }) - firstExp.liters
+                        
+                        result[monthName] = litDiff / Double(distDiff) * 100
+                        continue
+                    }
+                } else { //Если нет заправок полного бака за месяц
+                    return PointData()
+                }
+            }
+            return result
+        } catch { return PointData() }
+    }
+    // ------------------------------------------------------------------------------------------------ \\
+    func getConsumption(_ year: Int) -> Double { // Расход топлива
         do {
             let calendar = Calendar.current
 //            calendar.timeZone = TimeZone(secondsFromGMT: 0)!
@@ -311,7 +377,6 @@ struct UserData {
         return result
     }
 }
-
 // ------------------------------------------------------------------------------------------------ \\
 struct ChartComparer {
     private let year: Int
@@ -323,15 +388,13 @@ struct ChartComparer {
     }
     // ------------------------------------------------------------------------------------------------ \\
     func distanceLineChart() -> ChartData {
-        var result = ChartData(title: "Distance".localize,
-                               subTitle: "km".localize)
+        var result = ChartData(title: "Distance".localize, subTitle: "km".localize)
         result.pointData = UserData(self.context).getDistance(self.year)
         return result
     }
     // ------------------------------------------------------------------------------------------------ \\
     func pricesBarChart(_ expType: ExpensesType) -> ChartData {
-        var result = ChartData(title: expType.rawValue.stringValue(),
-                                subTitle: UserDef().getCurrencySumbol())
+        var result = ChartData(title: expType.rawValue.stringValue(), subTitle: UserDef().getCurrencySumbol())
         result.pointData = UserData(self.context).getPrices(self.year, expType: expType)
         return result
     }
@@ -339,6 +402,12 @@ struct ChartComparer {
     func costPerKm() -> ChartData {
         var result = ChartData(title: "Cost Per Kilometer".localize, subTitle: UserDef().getCurrencySumbol())
         result.pointData = UserData(self.context).getCostPerKm(self.year)
+        return result
+    }
+    // ------------------------------------------------------------------------------------------------ \\
+    func consumption() -> ChartData {
+        var result = ChartData(title: "Consumption".localize, subTitle: "l/100km".localize)
+        result.pointData = UserData(self.context).getConsumption(self.year)
         return result
     }
 }

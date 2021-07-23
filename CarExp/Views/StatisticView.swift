@@ -10,15 +10,15 @@ import SwiftUICharts
 import CoreData
 
 enum StatisticType: String, CaseIterable {
-    case yearly = "Yearly"
-    case average = "Average"
+    case monthly = "Monthly"
+    case total = "Total"
 }
 
 
 struct StatisticView: View {
     @Environment(\.managedObjectContext) var context
     var viewName: LocalizedStringKey
-    @State private var statType: StatisticType = .yearly
+    @State private var statType: StatisticType = .monthly
     @State private var selection = Date()
     @State private var statYear = getNowYear()
     
@@ -60,7 +60,7 @@ struct StatisticView: View {
                         }
                         
                         switch self.statType {
-                        case .yearly:
+                        case .monthly:
                             ScrollView {
                                 let width = geometry.size.width
                                 if UserData(self.context).getPrices() != 0 {
@@ -74,32 +74,43 @@ struct StatisticView: View {
                                     .frame(width: width, height: width + 50)
                                 }
                                 Divider()
-                                LineChartView(ChartComparer(statYear, self.context).distanceLineChart())
-                                    .frame(height: width + 50).padding().padding(.leading, -15)
+                                TabView {
+                                    lineChart(ChartComparer(statYear, self.context).distanceLineChart(), width, width)
+                                    lineChart(ChartComparer(statYear, self.context).consumption(), width, width)
+                                }
+                                .tabViewStyle(PageTabViewStyle())
+                                .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+                                .frame(width: width, height: width + 50)
+                                
                                 Divider()
                                 LineChartView(ChartComparer(statYear, self.context).costPerKm(), roundBy: 2)
                                     .frame(height: width + 50).padding().padding(.leading, -15)
                             }
                             
-                        case .average:
+                        case .total:
                             let cardWidth = geometry.size.width/3.4
                             VStack {
-                                HStack {
-                                    let distValue = UserData(self.context).getDistance(self.statYear)
-                                    let distValueStr =
-                                        (distValue.sum == 0 ? "" : "\(distValue.sum.toRoundedStr(0)) " + "km".localize)
-                                    statCard(caption: "Distance", value: distValueStr, width: cardWidth)
-                                    
-                                    let expValue = UserData(self.context).getPrices(self.statYear).sum
-                                    let expValueStr = (expValue == 0 ? "" : "\(expValue.toRoundedStr(0)) \(self.currSumbol)")
-                                    statCard(caption: "Expenses", value: expValueStr, width: cardWidth)
-                                    
-                                    let consValue = UserData(self.context).getConsumption(self.statYear)
-                                    let consValueStr = (consValue == 0 ? "" : consValue.toRoundedStr(1)+"l/100km".localize)
-                                    statCard(caption: "Consumption", value: consValueStr, width: cardWidth)
+                                VStack {
+                                    HStack {
+                                        let distValue = UserData(self.context).getDistance(self.statYear)
+                                        let distValueStr =
+                                            (distValue.sum == 0 ? "" : "\(distValue.sum.toRoundedStr(0)) " + "km".localize)
+                                        statCard(caption: "Distance", value: distValueStr, width: cardWidth)
+                                        
+                                        let expValue = UserData(self.context).getPrices(self.statYear).sum
+                                        let expValueStr = (expValue == 0 ? "" : "\(expValue.toRoundedStr(0)) \(self.currSumbol)")
+                                        statCard(caption: "Expenses", value: expValueStr, width: cardWidth)
+                                        
+                                        let consValue = UserData(self.context).getConsumption(self.statYear)
+                                        let consValueStr = (consValue == 0 ? "" : consValue.toRoundedStr(1)+"l/100km".localize)
+                                        statCard(caption: "Consumption", value: consValueStr, width: cardWidth)
+                                    }
+                                    HStack {
+                                        
+                                    }
                                 }
                                 Divider()
-                                Text("All period").font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/).bold().foregroundColor(dateColor)
+                                Text("All period").font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/).bold().foregroundColor(Color(.systemPurple))
                                 HStack {
                                     let distValue = UserData(self.context).getDistance()
                                     let distValueStr = (distValue == 0 ? "" : "\(distValue) " + "km".localize)
@@ -150,6 +161,25 @@ struct StatisticView: View {
         }
     }
     
+    struct lineChart: View {
+        let data: ChartData
+        let width, height: CGFloat
+
+        
+        init(_ chartData: ChartData, _ width: CGFloat, _ height: CGFloat) {
+            self.data = chartData
+            self.width = width
+            self.height = height
+        }
+        
+        var body: some View {
+            VStack {
+                LineChartView(self.data).padding(.horizontal).frame(width: self.width, height: self.height)
+                Spacer()
+            }
+        }
+    }
+    
     
     struct statCard: View {
         let caption: LocalizedStringKey
@@ -167,7 +197,7 @@ struct StatisticView: View {
             .padding(.vertical)
             .frame(width: width)
             .background(Color(.secondarySystemBackground))
-            .border(Color(.label))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color(.label), lineWidth: 1.5))
         }
     }
     
