@@ -70,6 +70,7 @@ struct RemindersView: View {
                             let reminder = reminders[index]
                             context.delete(reminder)
                             UserData(self.context).saveContext()
+                            badgeSequence.onNext(UserData(self.context).getMissedReminders().count)
                         }
                     })
                 }

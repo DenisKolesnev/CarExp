@@ -257,6 +257,7 @@ struct AddExpenseView: View {
                     // ----------------------------------------------------------------- \\
                     
                     UserData(inSelf.context).saveContext()
+                    badgeSequence.onNext(UserData(inSelf.context).getMissedReminders().count)
                     inSelf.presentationMode.wrappedValue.dismiss()
                     inSelf.reminderView?.presentationMode.wrappedValue.dismiss()
                 }

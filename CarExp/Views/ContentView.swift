@@ -6,12 +6,22 @@
 //
 
 import SwiftUI
+import RxSwift
+
+let badgeSequence = PublishSubject<Int>()
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) var context
     private let badgePos: CGFloat = 2
     private let tabsCount: CGFloat = 4
+    private let bag = DisposeBag()
     @State private var badgeNumber: Int = 0
+    
+    func badgeSequenceSubscribe() {
+        badgeSequence.subscribe(onNext: {
+            self.badgeNumber = $0
+        }).disposed(by: bag)
+    }
     
     var body: some View {
         
@@ -53,7 +63,10 @@ struct ContentView: View {
                 .frame(width: 20, height: 20)
                 .offset(x: ((2 * self.badgePos) - 1) * (geometry.size.width / (2 * self.tabsCount)), y: -30)
                 .opacity(self.badgeNumber == 0 ? 0 : 1)
-                .onAppear(perform: { self.badgeNumber = UserData(self.context).getMissedReminders().count })
+                .onAppear(perform: {
+                    badgeSequenceSubscribe()
+                    badgeSequence.onNext(UserData(self.context).getMissedReminders().count)
+                })
             }.ignoresSafeArea(/*@START_MENU_TOKEN@*/.keyboard/*@END_MENU_TOKEN@*/)
         }
     }
