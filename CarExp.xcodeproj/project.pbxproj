@@ -15,6 +15,8 @@
 		7C7C1A69253CE7DE00AE2C9B /* AddExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C7C1A68253CE7DE00AE2C9B /* AddExpenseView.swift */; };
 		7C93000025455BEE00CFE19E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7C93000225455BEE00CFE19E /* Localizable.strings */; };
 		7CB9034525730BC200CFDD81 /* AddReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB9034425730BC200CFDD81 /* AddReminderView.swift */; };
+		7CBB278226AB16260068480F /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 7CBB278126AB16260068480F /* RxSwift */; };
+		7CBB278426AB16260068480F /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 7CBB278326AB16260068480F /* RxCocoa */; };
 		7CC55787253B43890033CAF2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC55786253B43890033CAF2 /* AppDelegate.swift */; };
 		7CC55789253B43890033CAF2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC55788253B43890033CAF2 /* SceneDelegate.swift */; };
 		7CC5578B253B43890033CAF2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC5578A253B43890033CAF2 /* ContentView.swift */; };
@@ -63,6 +65,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7CBB278426AB16260068480F /* RxCocoa in Frameworks */,
+				7CBB278226AB16260068480F /* RxSwift in Frameworks */,
 				7C6CFC93267DF3FA00109E93 /* SwiftUICharts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -149,6 +153,8 @@
 			name = CarExp;
 			packageProductDependencies = (
 				7C6CFC92267DF3FA00109E93 /* SwiftUICharts */,
+				7CBB278126AB16260068480F /* RxSwift */,
+				7CBB278326AB16260068480F /* RxCocoa */,
 			);
 			productName = CarExp;
 			productReference = 7CC55783253B43890033CAF2 /* CarExp.app */;
@@ -180,6 +186,7 @@
 			mainGroup = 7CC5577A253B43890033CAF2;
 			packageReferences = (
 				7C6CFC91267DF3FA00109E93 /* XCRemoteSwiftPackageReference "SwiftUICharts" */,
+				7CBB278026AB16260068480F /* XCRemoteSwiftPackageReference "RxSwift" */,
 			);
 			productRefGroup = 7CC55784253B43890033CAF2 /* Products */;
 			projectDirPath = "";
@@ -442,8 +449,16 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/willdale/SwiftUICharts";
 			requirement = {
-				kind = upToNextMajorVersion;
+				kind = upToNextMinorVersion;
 				minimumVersion = 2.7.0;
+			};
+		};
+		7CBB278026AB16260068480F /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 6.2.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -453,6 +468,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7C6CFC91267DF3FA00109E93 /* XCRemoteSwiftPackageReference "SwiftUICharts" */;
 			productName = SwiftUICharts;
+		};
+		7CBB278126AB16260068480F /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7CBB278026AB16260068480F /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		7CBB278326AB16260068480F /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7CBB278026AB16260068480F /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
 		};
 /* End XCSwiftPackageProductDependency section */
 
