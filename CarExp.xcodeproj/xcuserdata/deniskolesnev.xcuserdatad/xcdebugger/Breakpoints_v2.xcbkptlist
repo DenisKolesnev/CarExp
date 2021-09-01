@@ -14,8 +14,8 @@
             filePath = "Structs.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "286"
-            endingLineNumber = "286"
+            startingLineNumber = "282"
+            endingLineNumber = "282"
             landmarkName = "getDistance(_:)"
             landmarkType = "7">
          </BreakpointContent>

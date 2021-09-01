@@ -18,8 +18,8 @@ struct ChartData {
 // ------------------------------------------------------------------------------------------------ \\
 struct UserDef {
     private let userDefaults = UserDefaults.standard
-    private let actualDistanceKey = "ActualDistance"
-    private let currencySumbol = "CurrencySumbol"
+    private let actualDistanceKey = "ActualDistance" // текущий пробег
+    private let currencySumbol = "CurrencySumbol" // символ валюты
     
     func setActualDistance(_ value: Int32) { userDefaults.setValue(value, forKey: actualDistanceKey) }
     func getActualDistance() -> Int32 { Int32(userDefaults.integer(forKey: actualDistanceKey)) }
@@ -125,7 +125,6 @@ struct UserData {
         do {
             var result = PointData()
             let calendar = Calendar.current
-//            calendar.timeZone = TimeZone(secondsFromGMT: 0)!
             
             for month in (1...12) {
                 let monthName = calendar.standaloneMonthSymbols[month-1]
@@ -181,7 +180,6 @@ struct UserData {
         do {
             var result = PointData()
             let calendar = Calendar.current
-//            calendar.timeZone = TimeZone(secondsFromGMT: 0)!
             let distance = getDistance(year)
             
             for month in (1...12) {
@@ -238,7 +236,6 @@ struct UserData {
     func getConsumption(_ year: Int) -> Double { // Расход топлива
         do {
             let calendar = Calendar.current
-//            calendar.timeZone = TimeZone(secondsFromGMT: 0)!
             
             guard let startOfYear = calendar.date(from: DateComponents(year: year, month: 1, day: 1)) else { return 0 }
             guard let endOfYear = startOfYear.endOfYear else { return 0 }
@@ -280,7 +277,6 @@ struct UserData {
         do {
             var result = PointData()
             let calendar = Calendar.current
-//            calendar.timeZone = TimeZone(secondsFromGMT: 0)!
             
             for month in (1...12) {
                 let monthName = calendar.standaloneMonthSymbols[month-1]

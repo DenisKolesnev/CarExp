@@ -20,14 +20,14 @@ func loadReminderType(_ value: String?) -> ReminderType? {
     return nil
 }
 
-
+/// Пробег на котором должно сработать напоминание
 func getReminderDistance(_ reminder: Reminders, _ context: NSManagedObjectContext) -> Int32 {
     guard let expId = reminder.expId else { return 0 }
     guard let exp = UserData(context).getExpenses(expId) else { return 0 }
     return exp.distance + reminder.distance - UserDef().getActualDistance()
 }
 
-
+/// Просрочено ли напоминание
 func reminderIsMiss(_ reminder: Reminders, _ context: NSManagedObjectContext) -> Bool {
     switch loadReminderType(reminder.type) {
     case .byDate:

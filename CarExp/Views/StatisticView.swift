@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-import SwiftUICharts
 import CoreData
+import SwiftUICharts // https://github.com/willdale/SwiftUICharts
 
 enum StatisticType: String, CaseIterable {
     case monthly = "Monthly"
@@ -141,8 +141,7 @@ struct StatisticView: View {
         let width, height: CGFloat
         let context: NSManagedObjectContext
         
-        init(_ year: Int, _ expType: ExpensesType, _ width: CGFloat, _ height: CGFloat,
-             _ context: NSManagedObjectContext) {
+        init(_ year: Int, _ expType: ExpensesType, _ width: CGFloat, _ height: CGFloat, _ context: NSManagedObjectContext) {
             self.year = year
             self.expType = expType
             self.width = width
@@ -210,6 +209,7 @@ struct StatisticView: View {
     }
     
 }
+
 
 struct StatisticsView_Previews: PreviewProvider {
     static var previews: some View {

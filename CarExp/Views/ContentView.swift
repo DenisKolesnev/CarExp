@@ -15,9 +15,9 @@ struct ContentView: View {
     private let badgePos: CGFloat = 2
     private let tabsCount: CGFloat = 4
     private let bag = DisposeBag()
-    @State private var badgeNumber: Int = 0
+    @State private var badgeNumber = 0
     
-    func badgeSequenceSubscribe() {
+    private func badgeSequenceSubscribe() {
         badgeSequence.subscribe(onNext: {
             self.badgeNumber = $0
         }).disposed(by: bag)
@@ -31,26 +31,22 @@ struct ContentView: View {
                 TabView {
                     ExpensesView(viewName: "Expenses")
                         .tabItem {
-                            Text("Expenses")
-                            Image(systemName: "list.bullet.rectangle")
+                            Label("Expenses", systemImage: "list.bullet.rectangle")
                         }
                     
                     RemindersView(viewName: "Reminders")
                         .tabItem {
-                            Text("Reminders")
-                            Image(systemName: "bell")
+                            Label("Reminders", systemImage: "bell")
                         }
                     
                     StatisticView(viewName: "Statistic")
                         .tabItem {
-                            Text("Statistic")
-                            Image(systemName: "chart.bar.xaxis")
+                            Label("Statistic", systemImage: "chart.bar.xaxis")
                         }
 
                     SettingsView(viewName: "Settings")
                         .tabItem {
-                            Text("Settings")
-                            Image(systemName: "gearshape.fill")
+                            Label("Settings", systemImage: "gearshape.fill")
                         }
                 }
                 
